@@ -39,8 +39,8 @@ def hello():
         f"Precipitation: /api/v1.0/precipitation<br/>"
         f"Stations: /api/v1.0/stations<br/>"
         f"1yr Temp: /api/v1.0/tobs<br/>"
-        f"Temp since date(yyyy-mm-dd): /api/v1.0/yyyy-mm-dd<br/>"
-        f"Temp between two dates(yyyy-mm-dd): /api/v1.0/yyyy-mm-dd/yyyy-mm-dd"
+        f"Temp since date (format: yyyy-mm-dd): /api/v1.0/yyyy-mm-dd<br/>"
+        f"Temp between two dates(format: yyyy-mm-dd): /api/v1.0/yyyy-mm-dd/yyyy-mm-dd"
     )
 
 @app.route('api/v1.0/hello')
