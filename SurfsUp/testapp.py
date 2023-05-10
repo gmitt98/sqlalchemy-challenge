@@ -4,6 +4,8 @@ from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
 import os
+from flask import Flask
+from flask import jsonify
 
 # all the things to set up the database connection
 
@@ -20,18 +22,13 @@ Base = automap_base()
 Base.prepare(engine, reflect=True)
 # Save references to each table
 print(Base.classes.keys())
-measurement = Base.classes.measurement
-station = Base.classes.station
-# Create our session (link) from Python to the DB
-session = Session(engine)
-
-
-
+Measurement = Base.classes.measurement
+Station = Base.classes.station
 
 
 from flask import Flask
 
-# starating the flask app
+# starting the flask app
 
 app = Flask(__name__)
 
@@ -60,8 +57,8 @@ def hello3():
 
 @app.route('/api/v1.0/stations') # this will return a list of stations when called
 def get_stations():
-    #session = Session(engine)
-    results = session.query(station.station, station.name, station.latitude, station.longitude, station.elevation).all()
+    session = Session(engine)
+    results = session.query(Station.station, Station.name, Station.latitude, Station.longitude, Station.elevation).all()
     session.close()
     stations = []
     for station, name, latitude, longitude, elevation in results:
