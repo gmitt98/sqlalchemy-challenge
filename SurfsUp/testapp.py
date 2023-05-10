@@ -57,19 +57,19 @@ def hello3():
 
 @app.route('/api/v1.0/stations') # this will return a list of stations when called
 def get_stations():
-    session = Session(engine)
-    results = session.query(Station.station, Station.name, Station.latitude, Station.longitude, Station.elevation).all()
+    session = Session(engine) # connect to the database
+    results = session.query(Station.station, Station.name, Station.latitude, Station.longitude, Station.elevation).all() # get these data for all rows in teh table, returning it as a list of tuples
     session.close()
-    stations = []
-    for station, name, latitude, longitude, elevation in results:
-        station_dict = {}
+    stations = [] # open a list that i will put my dictionaries into
+    for station, name, latitude, longitude, elevation in results: # iterate through the list of tuples
+        station_dict = {} # for each item in the list of tuples, create a dictionary, and then we will drop the items in there
         station_dict['station'] = station
         station_dict['name'] = name
         station_dict['latitude'] = latitude
         station_dict['longitude'] = longitude
         station_dict['elevation'] = elevation
-        stations.append(station_dict)
-    return jsonify(stations)
+        stations.append(station_dict) # add this dict to my list of dicts
+    return jsonify(stations) # jsonify the final result which returns my json object request respose for this route
 
 
 @app.route('/api/v1.0/tobs')
