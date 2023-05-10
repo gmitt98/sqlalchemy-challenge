@@ -58,11 +58,12 @@ def hello3():
 @app.route('/api/v1.0/stations') # this will return a list of stations when called
 def get_stations():
     session = Session(engine) # connect to the database
-    results = session.query(Station.station, Station.name, Station.latitude, Station.longitude, Station.elevation).all() # get these data for all rows in teh table, returning it as a list of tuples
+    results = session.query(Station.id, Station.station, Station.name, Station.latitude, Station.longitude, Station.elevation).all() # get these data for all rows in teh table, returning it as a list of tuples
     session.close()
     stations = [] # open a list that i will put my dictionaries into
-    for station, name, latitude, longitude, elevation in results: # iterate through the list of tuples
+    for id, station, name, latitude, longitude, elevation in results: # iterate through the list of tuples
         station_dict = {} # for each item in the list of tuples, create a dictionary, and then we will drop the items in there
+        station_dict['id'] = id
         station_dict['station'] = station
         station_dict['name'] = name
         station_dict['latitude'] = latitude
