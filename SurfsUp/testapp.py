@@ -59,20 +59,21 @@ def hello3():
     return 'Hello, World!'
 
 @app.route('/api/v1.0/stations') # this will return a list of stations when called
-def hello4(): # define the function to start
-    session = session(Engine) # start our session
-    result = session.execute('select station, name, lat, lon, elevation from stations')
+def get_stations():
+    #session = Session(engine)
+    results = session.query(station.station, station.name, station.latitude, station.longitude, station.elevation).all()
     session.close()
     stations = []
-    for station,name,lat,lon,elevation in result:
+    for station, name, latitude, longitude, elevation in results:
         station_dict = {}
-        station_dict["Station"] = station
-        station_dict["Name"] = name
-        station_dict["Lat"] = lat
-        station_dict["Lon"] = lon
-        station_dict["Elevation"] = elevation
+        station_dict['station'] = station
+        station_dict['name'] = name
+        station_dict['latitude'] = latitude
+        station_dict['longitude'] = longitude
+        station_dict['elevation'] = elevation
         stations.append(station_dict)
     return jsonify(stations)
+
 
 @app.route('/api/v1.0/tobs')
 def hello5():
