@@ -46,14 +46,43 @@ def hello():
         f"Temp between two dates(format: yyyy-mm-dd): /api/v1.0/yyyy-mm-dd/yyyy-mm-dd"
     )
 
-@app.route('/api/v1.0/hello')
-def hello2():
-    return 'Hello, World!'
-
 @app.route('/api/v1.0/precipitation')
-def hello3(): 
+def hello3():
+    return('hello rainy world')
 
-    return 'Hello, World!'
+@app.route('/api/v1.0/stations3')
+def hello2():
+    session = Session(engine)
+    result = session.execute('SELECT id, station, name, latitude, longitude, elevation FROM station')
+    stations = []
+    for id, station, name, latitude, longitude, elevation in result:
+        station_dict = {}
+        station_dict['id'] = id
+        station_dict['station'] = station
+        station_dict['name'] = name
+        station_dict['latitude'] = latitude
+        station_dict['longitude'] = longitude
+        station_dict['elevation'] = elevation
+        stations.append(station_dict)
+    session.close()
+    return jsonify(stations)
+
+@app.route('/api/v1.0/stations2')
+def get_stations2():
+    session = Session(engine) # connect to the database
+    results = session.execute('SELECT id, station, name, latitude, longitude, elevation FROM station').fetchall() # get these data for all rows in the table, returning it as a list of tuples
+    session.close()
+    stations = [] # open a list that i will put my dictionaries into
+    for id, station, name, latitude, longitude, elevation in results: # iterate through the list of tuples
+        station_dict = {} # for each item in the list of tuples, create a dictionary, and then we will drop the items in there
+        station_dict['id'] = id
+        station_dict['station'] = station
+        station_dict['name'] = name
+        station_dict['latitude'] = latitude
+        station_dict['longitude'] = longitude
+        station_dict['elevation'] = elevation
+        stations.append(station_dict) # add this dict to my list of dicts
+    return jsonify(stations) # jsonify the final result which returns my json object request respose for this route
 
 @app.route('/api/v1.0/stations') # this will return a list of stations when called
 def get_stations():
