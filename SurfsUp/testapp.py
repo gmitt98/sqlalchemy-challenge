@@ -49,7 +49,7 @@ def hello():
     )
 
 @app.route('/api/v1.0/precipitation') # dropping in the code i had in the notebook
-def hello3():
+def get_precipitation():
     session = Session(engine)
     max_date_query = session.execute('SELECT MAX(date) FROM measurement')
     for row in max_date_query:
@@ -68,8 +68,8 @@ def hello3():
         prcp_list.append(prcp_dict)
     return jsonify(prcp_list)
 
-@app.route('/api/v1.0/stations3')
-def hello2():
+@app.route('/api/v1.0/stations')
+def get_stations():
     session = Session(engine)
     result = session.execute('SELECT id, station, name, latitude, longitude, elevation FROM station')
     stations = []
@@ -102,8 +102,8 @@ def get_stations2():
         stations.append(station_dict) # add this dict to my list of dicts
     return jsonify(stations) # jsonify the final result which returns my json object request respose for this route
 
-@app.route('/api/v1.0/stations') # this will return a list of stations when called
-def get_stations():
+@app.route('/api/v1.0/stations3') # this will return a list of stations when called
+def get_stations3():
     session = Session(engine) # connect to the database
     results = session.query(Station.id, Station.station, Station.name, Station.latitude, Station.longitude, Station.elevation).all() # get these data for all rows in teh table, returning it as a list of tuples
     session.close()
@@ -121,12 +121,28 @@ def get_stations():
 
 
 @app.route('/api/v1.0/tobs')
-def hello5():
-    return 'Hello, World!'
+def tobs():
+    session = Session(engine)
+    max_date_query = session.execute('SELECT MAX(date) FROM measurement')
+    for row in max_date_query:
+        max_date_string = row[0]
+    max_date = datetime.strptime(max_date_string, '%Y-%m-%d').date()
+    one_year_ago = max_date - timedelta(days=365)
+    station_activity_result = session.execute('select station, count(id) as count_id from measurement group by station order by count_id desc')
+    station_activity_result_list = []
+    for row in station_activity_result:
+        station_activity_result_list.append(row)
+    most_active_station_name = station_activity_result_list[0][0]
+    query = 'select date, tobs from measurement where station = :most_active_station_name and date > :one_year_ago'
+    most_active_data_query_hist = session.execute(query, {'most_active_station_name':most_active_station_name, 'one_year_ago':one_year_ago})
+    most_active_data_dict = [] # I will write the data to a dictionary
+    for row in most_active_data_query_hist:
+        most_active_data_dict.append({'date': row[0], 'tobs': row[1]})
+    return jsonify(most_active_data_dict)
 
 @app.route('/api/v1.0/<start>')
 def hello6():
-    return 'Hello, World!'
+    return('hello6')
 
 @app.route('/api/v1.0/<start>/<end>')
 def hello7():
