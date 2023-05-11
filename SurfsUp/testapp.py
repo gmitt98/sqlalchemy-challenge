@@ -6,6 +6,8 @@ from sqlalchemy import create_engine, func
 import os
 from flask import Flask
 from flask import jsonify
+from datetime import datetime
+from datetime import timedelta
 
 # all the things to set up the database connection
 
@@ -46,9 +48,25 @@ def hello():
         f"Temp between two dates(format: yyyy-mm-dd): /api/v1.0/yyyy-mm-dd/yyyy-mm-dd"
     )
 
-@app.route('/api/v1.0/precipitation')
+@app.route('/api/v1.0/precipitation') # dropping in the code i had in the notebook
 def hello3():
-    return('hello rainy world')
+    session = Session(engine)
+    max_date_query = session.execute('SELECT MAX(date) FROM measurement')
+    for row in max_date_query:
+        max_date_string = row[0]
+        print(max_date_string)
+    max_date = datetime.strptime(max_date_string, '%Y-%m-%d').date()
+    one_year_ago = max_date - timedelta(days=365)
+    print(one_year_ago)
+    query = 'select date, prcp from measurement where date > :one_year_ago'
+    result = session.execute(query, {'one_year_ago':one_year_ago})
+    prcp_list = [] # now i write the results out: row -> dict -> list -> json object -> return
+    for date, prcp in result:
+        prcp_dict = {}
+        prcp_dict['date'] = date
+        prcp_dict['prcp'] = prcp
+        prcp_list.append(prcp_dict)
+    return jsonify(prcp_list)
 
 @app.route('/api/v1.0/stations3')
 def hello2():
